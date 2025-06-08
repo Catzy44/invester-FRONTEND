@@ -1,9 +1,10 @@
 import s from "./App.module.scss";
 
 import { AllEventsTable } from "../MarketEventsPresenter/AllEventsTable.tsx";
-import { Summary } from "../MarketInfluenceSummary/Summary.tsx";
+import { MarketInfluenceSummary } from "../MarketInfluenceSummary/MarketInfluenceSummary.tsx";
 import { ProcStats } from "../ProcessorStatistics/ProcStats.tsx";
 import {useEffect} from "react";
+import {MarketIncluenceChart} from "../MarketInfluenceChart/MarketIncluenceChart.tsx";
 
 
 function App() {
@@ -15,9 +16,16 @@ function App() {
     },[])
 
     return <div className={s.main}>
-        <ProcStats/>
-        <Summary/>
-        <AllEventsTable/>
+        <div>
+            <AllEventsTable/>
+
+
+        </div>
+        <div>
+            <ProcStats/>
+            <MarketInfluenceSummary/>
+            <MarketIncluenceChart/>
+        </div>
     </div>
 }
 

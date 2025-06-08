@@ -5,7 +5,7 @@ import {parseDate} from "../App/App.Utils.tsx";
 import s from "./Summary.module.scss";
 import {calculateAvg} from "./Summary.Utils.tsx";
 
-export function Summary() {
+export function MarketInfluenceSummary() {
     const [dumbState,setDumbState] = useState<number>(0)
     useEffect(()=>{
         const x = setInterval(()=>{
@@ -35,6 +35,7 @@ export function Summary() {
     const dif = pos-neg
 
     return <div className={s.main}>
+        <span>Liczba artykułów aktywnie wywierających wpływ na rynek: {events.length}</span>
         <span>Średnie wartości wpływu aktywnych wydarzeń rynkowych, ważone ich celnością</span>
         <span>Pozytywna: {pos.toFixed(3)} %</span><br/>
         <span>Negatywna: {neg.toFixed(3)} %</span>

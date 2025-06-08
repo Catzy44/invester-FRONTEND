@@ -102,8 +102,8 @@ export function MarketEventRow({marketEvent}: {marketEvent: MarketEvent}) {
         <td>{starsFromNum(marketEvent.impactChance/10)}</td>
         <td>{
             marketEvent.type == MarketEventType.Pozytywny
-                ? "Pozytywny ▲"
-                : "Negatywny ▼"
+                ? "▲"
+                : "▼"
         }</td>
 
         <td>{marketEvent.impactPrc} %</td>
