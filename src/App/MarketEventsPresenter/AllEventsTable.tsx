@@ -1,12 +1,10 @@
-import s from "./App.module.scss";
-
 import {useEffect, useState} from "react";
-import {Article, MarketEvent, MarketEventType } from "./App.types.tsx";
-import {formatDate, formatTimeLeft, marketColor, parseDate, starsFromNum} from "./App.utils.tsx";
-import { fet } from "./Utils.tsx";
+import {Article, MarketEvent, MarketEventType} from "../App/App.types.tsx";
+import {fet} from "../App/Utils.tsx";
+import {formatDate, formatTimeLeft, marketColor, parseDate, starsFromNum} from "../App/App.Utils.tsx";
+import s from "./AllEventsTable.module.scss";
 
-
-function App() {
+export function AllEventsTable() {
     const [dumbState,setDumbState] = useState<number>(0)
     useEffect(()=>{
         const x = setInterval(()=>{
@@ -76,7 +74,7 @@ function ArticleRowTr({ article, index }: { article: Article,index: number }) {
 
     return <>
         <tr>
-            <th colSpan={5}>{article.title}</th>
+            <th colSpan={5}><a href={article.url}>{article.title}</a></th>
             <td>{formatDate(article.timestamp)}</td>
             <td>WIEK:{formatTimeLeft(article.timestamp,new Date())}</td>
         </tr>
@@ -96,7 +94,7 @@ function ArticleRowTr({ article, index }: { article: Article,index: number }) {
     </>
 }
 
-function MarketEventRow({marketEvent}: {marketEvent: MarketEvent}) {
+export function MarketEventRow({marketEvent}: {marketEvent: MarketEvent}) {
 
     const color = marketColor(marketEvent)
 
@@ -116,5 +114,3 @@ function MarketEventRow({marketEvent}: {marketEvent: MarketEvent}) {
         <td>{formatTimeLeft(new Date(),marketEvent.endTimestamp)}</td>
     </tr>
 }
-
-export default App

@@ -7,7 +7,7 @@ function fixAddr(adr: string) {
     return host+adr
 }
 function getSID() {
-    return "CHUJ"
+    return "WODOSPAD"
 }
 export function fet(address: string,options = null) {
     const isFormData = options == null || options.body == null ? false : options.body instanceof FormData

@@ -1,4 +1,4 @@
-import {MarketEvent, MarketEventType} from "./App.types";
+import {MarketEvent, MarketEventType} from "./App.types.tsx";
 
 export function parseDate(date?: any) {
     return date == null ? null : new Date(date)

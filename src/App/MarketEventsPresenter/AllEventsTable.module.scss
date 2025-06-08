@@ -1,4 +1,4 @@
-@import '../montserrat.css';
+@import '../../montserrat.css';
 
 * {
   box-sizing: border-box;
@@ -36,7 +36,10 @@ table.main {
     th,td {
       color:white;
 
-
+      a {
+        text-decoration: underline;
+        color:white;
+      }
     }
     td {
       padding: 0 10px;

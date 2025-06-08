@@ -1,0 +1,13 @@
+.main {
+  display: flex;
+  flex-direction: column;
+
+  span.difference {
+    &.green {
+      background-color: green;
+    }
+    &.red {
+      background-color: red;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@import '../../montserrat.css';
+
+* {
+  box-sizing: border-box;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+
+}
