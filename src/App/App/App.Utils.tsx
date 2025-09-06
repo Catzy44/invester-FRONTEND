@@ -32,11 +32,7 @@ export function formatDate(isoString : Date) {
         minute: '2-digit'
     });
 }
-export function starsFromNum(val: number): string {
-    const safeVal = Math.round(val); // Zaokrąglij do najbliższej liczby całkowitej
-    const clamped = Math.max(0, Math.min(10, safeVal)); // Ogranicz do zakresu 0–10
-    return "★".repeat(clamped) + "☆".repeat(10 - clamped);
-}
+
 
 export function marketColor(marketEvent: MarketEvent) {
     const movePct = marketEvent.impactPrc

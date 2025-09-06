@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {MarketEvent, MarketEventType} from "../App/App.types.tsx";
 import {fet} from "../App/Utils.tsx";
 import {parseDate} from "../App/App.Utils.tsx";
 import s from "./Summary.module.scss";
 import {calculateAvg} from "./Summary.Utils.tsx";
 
-export function MarketInfluenceSummary() {
+export function MarketInfluenceSummary({settings}) {
     const [dumbState,setDumbState] = useState<number>(0)
     useEffect(()=>{
         const x = setInterval(()=>{
@@ -29,18 +29,47 @@ export function MarketInfluenceSummary() {
         })
     },[dumbState])
 
-    const pos = calculateAvg(events.filter(ev=> ev.type == MarketEventType.Pozytywny))
-    const neg = calculateAvg(events.filter(ev=> ev.type == MarketEventType.Negatywny))
+    const eventsFiltered = useMemo(()=>{
+        let filtered = events.filter(event=>{
+            if(!settings.maxArticleAge.enabled) return true
 
-    const dif = pos-neg
+            const maxAllowedAgeMillis = settings.maxArticleAge.value * 60 * 60 * 1000
+            const articleAgeMillis = event.startTimestamp.getTime()
+            const currentTimeMillis = new Date().getTime()
+
+            return articleAgeMillis > currentTimeMillis - maxAllowedAgeMillis
+
+        })
+        filtered = filtered.filter(event=>{
+            if(!settings.minArticleChance.enabled) return true
+            return event.impactChance >= settings.minArticleChance.value
+        })
+        filtered = filtered.filter(event=>{
+            if(!settings.minArticleInfluence.enabled) return true
+            return event.impactPrc >= settings.minArticleInfluence.value
+        })
+        return filtered
+    }, [events, settings])
+
+    const positiveInfluence = calculateAvg(eventsFiltered.filter(ev=> ev.type == MarketEventType.Pozytywny))
+    const negativeInfluence = calculateAvg(eventsFiltered.filter(ev=> ev.type == MarketEventType.Negatywny))
+
+    const influenceDiffer = positiveInfluence-negativeInfluence
+    const influenceDifferFixed = influenceDiffer.toFixed(3)
+
+    const difArrowUpOrDown = influenceDiffer > 0 ? "▲" : "▼"
+
+    useEffect(() => {
+        document.title = `Invester ${difArrowUpOrDown} ${influenceDifferFixed}%`
+    }, [influenceDiffer]);
 
     return <div className={s.main}>
-        <span>Liczba artykułów aktywnie wywierających wpływ na rynek: {events.length}</span>
+        <span>Liczba wydarzeń aktywnie wywierających wpływ na rynek: {eventsFiltered.length}</span>
         <span>Średnie wartości wpływu aktywnych wydarzeń rynkowych, ważone ich celnością</span>
-        <span>Pozytywna: {pos.toFixed(3)} %</span><br/>
-        <span>Negatywna: {neg.toFixed(3)} %</span>
-        <span className={`${s.difference} ${dif > 0 ? s.green : s.red}`}>
-            Różnica: {dif.toFixed(3)} % {dif > 0 ? "▲" : "▼"}
+        <span>Pozytywna: {positiveInfluence.toFixed(3)} %</span><br/>
+        <span>Negatywna: {negativeInfluence.toFixed(3)} %</span>
+        <span className={`${s.difference} ${influenceDiffer > 0 ? s.green : s.red}`}>
+            Różnica: {influenceDifferFixed} % {difArrowUpOrDown}
         </span>
         {/*<table className={s.main}>*/}
         {/*    {events.map((event)=><MarketEventRow key={event.id} marketEvent={event}/>)}*/}

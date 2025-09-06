@@ -10,7 +10,7 @@ import {
     Legend,
 } from 'chart.js';
 import {Line } from "react-chartjs-2";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {MarketEvent, MarketEventType} from "../App/App.types.tsx";
 import {fet} from "../App/Utils.tsx";
 import {parseDate} from "../App/App.Utils.tsx";
@@ -24,7 +24,9 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend
-);
+)
+
+ChartJS.defaults.color = '#fff';
 
 export const options = {
     responsive: true,
@@ -52,7 +54,7 @@ export const options2 = {
 }
 
 
-export function MarketIncluenceChart() {
+export function MarketIncluenceChart({settings}) {
     const [dumbState,setDumbState] = useState<number>(0)
     useEffect(()=>{
         const x = setInterval(()=>{
@@ -76,6 +78,28 @@ export function MarketIncluenceChart() {
         })
     },[dumbState])
 
+    const eventsFiltered = useMemo(()=>{
+        let filtered = events.filter(event=>{
+            if(!settings.maxArticleAge.enabled) return true
+
+            const maxAllowedAgeMillis = settings.maxArticleAge.value * 60 * 60 * 1000
+            const articleAgeMillis = event.startTimestamp.getTime()
+            const currentTimeMillis = new Date().getTime()
+
+            return articleAgeMillis > currentTimeMillis - maxAllowedAgeMillis
+
+        })
+        filtered = filtered.filter(event=>{
+            if(!settings.minArticleChance.enabled) return true
+            return event.impactChance >= settings.minArticleChance.value
+        })
+        filtered = filtered.filter(event=>{
+            if(!settings.minArticleInfluence.enabled) return true
+            return event.impactPrc >= settings.minArticleInfluence.value
+        })
+        return filtered
+    }, [events, settings])
+
     const labels = []
     const data = {
         labels,
@@ -93,7 +117,7 @@ export function MarketIncluenceChart() {
                 backgroundColor: 'rgba(162,0,34,0.5)',
             },
             {
-                label: 'Pewność informacji',
+                label: 'Rzetelność informacji',
                 data: [],
                 borderColor: 'rgb(0,255,228)',
                 backgroundColor: 'rgb(0,204,204)',
@@ -104,13 +128,13 @@ export function MarketIncluenceChart() {
         labels,
         datasets: [
             {
-                label: 'Różnica',
+                label: '% zmiany wartości aktywa',
                 data: [],
                 borderColor: 'rgb(124,0,255)',
                 backgroundColor: 'rgb(82,0,108)',
             },
             {
-                label: 'Pewność informacji',
+                label: 'Rzetelność informacji',
                 data: [],
                 borderColor: 'rgb(0,255,197)',
                 backgroundColor: 'rgb(0,255,213)',
@@ -129,7 +153,7 @@ export function MarketIncluenceChart() {
         labels.push("T+"+i)
 
         const date = new Date(current.getTime() + (i* 1000*60*60*24))
-        const activeEvents = events.filter(ev=>ev.endTimestamp > date)
+        const activeEvents = eventsFiltered.filter(ev=>ev.endTimestamp > date)
 
         const pos = calculateAvg(activeEvents.filter(ev=> ev.type == MarketEventType.Pozytywny))
         const neg = calculateAvg(activeEvents.filter(ev=> ev.type == MarketEventType.Negatywny))
@@ -144,11 +168,11 @@ export function MarketIncluenceChart() {
     const dataSet1Max = Math.max(Math.max(...data.datasets[0].data),Math.max(...data.datasets[1].data))
     const dataSet2Max = Math.max(...data2.datasets[0].data)
 
-    const currentActiveEventCount = events.filter(ev=>ev.endTimestamp.getTime() > new Date().getTime()).length
+    const currentActiveEventCount = eventsFiltered.filter(ev=>ev.endTimestamp.getTime() > new Date().getTime()).length
 
     for(let i = 0; i < 30; i++) {
         const date = new Date(current.getTime() + (i* 1000*60*60*24))
-        const activeEvents = events.filter(ev=>ev.endTimestamp > date).length
+        const activeEvents = eventsFiltered.filter(ev=>ev.endTimestamp > date).length
 
         const r = activeEvents/currentActiveEventCount//1.111
 

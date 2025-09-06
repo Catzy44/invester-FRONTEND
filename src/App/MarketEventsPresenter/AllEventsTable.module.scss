@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+.starsDark {
+  color: rgba(255, 255, 255, 0.51)
+}
+
 table.main {
 
   tr {//#242424
@@ -16,6 +20,8 @@ table.main {
     &.titleRow {
       th,td {
         color: rgba(255, 255, 255, 0.46);
+        font-weight: normal;
+        padding: 0 5px;
       }
     }
 
